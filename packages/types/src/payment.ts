@@ -198,6 +198,24 @@ export interface PaymentAuditLogEntry {
   signature?: string;
 }
 
+// ---------------------------------------------------------------------------
+// Issue #384 — Carrier Tracking Polling Fallback for Non-Webhook Carriers
+// ---------------------------------------------------------------------------
+
+/**
+ * Tracks the exponential backoff polling schedule for a single payment's
+ * carrier tracking endpoint.  Persisted in the `payment_records` table so
+ * a restart never loses the backoff state.
+ */
+export interface PollingSchedule {
+  /** ISO-8601 timestamp of the next poll attempt. */
+  nextPollAt: Date;
+  /** Base interval in minutes, doubled on each unchanged check (exponential backoff). */
+  pollIntervalMinutes: number;
+  /** How many consecutive polls found no change in tracking status. */
+  consecutiveUnchangedCount: number;
+}
+
 export interface PCIComplianceSnapshot {
   saqType: "SAQ A-EP";
   complianceStatus: "compliant" | "non_compliant" | "in_progress";
