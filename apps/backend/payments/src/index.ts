@@ -14,7 +14,7 @@ import { enablePostgresDisputeStore } from "./disputes/disputeStore.js";
 import { startTimeoutRefundScheduler } from "./workers/timeoutRefund.js";
 import { startShippingExceptionScheduler } from "./shipping/exceptionDetector.js";
 import { startCarrierTrackingWorker } from "./webhooks/carrierWorker.js";
-
+import { startCarrierPollingScheduler } from "./workers/carrierPolling.js";
 
 export { escrowCoordinator } from "./escrowCoordinator/index.js";
 export { reconcileSettlements, startReconciliationScheduler } from "./reconciliation/settlementReconciler.js";
@@ -270,7 +270,6 @@ if (process.env.ENABLE_TIMEOUT_REFUND_WORKER !== "false") {
     timeoutRefundScheduler.stop();
   });
 }
-
 // ─── #295 Shipping Exception & Lost Package Detector ───────────────────────
 
 if (process.env.ENABLE_SHIPPING_EXCEPTION_SCAN !== "false") {
@@ -279,6 +278,17 @@ if (process.env.ENABLE_SHIPPING_EXCEPTION_SCAN !== "false") {
   process.on("SIGTERM", () => {
     log.info("SIGTERM received; stopping shipping exception scheduler");
     stopShippingExceptionScheduler();
+  });
+}
+
+// ─── #384 Carrier Tracking Polling Fallback ──────────────────────────────────
+
+if (process.env.ENABLE_CARRIER_POLLING !== "false") {
+  const carrierPollingScheduler = startCarrierPollingScheduler();
+
+  process.on("SIGTERM", () => {
+    log.info("SIGTERM received; stopping carrier polling scheduler");
+    carrierPollingScheduler.stop();
   });
 }
 
