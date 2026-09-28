@@ -6,9 +6,9 @@
   "type": "module",
   "main": "./dist/index.js",
   "scripts": {
-    "build": "tsc && node -e 'const fs=require(\"fs\");const p=require(\"path\");[\"routes\",\"src\",\"middleware\"].forEach(d=>{const s=p.join(\"dist/gateway\",d),t=p.join(\"dist\",d);if(fs.existsSync(s)&&!fs.existsSync(t))try{fs.symlinkSync(p.join(\"gateway\",d),t,\"dir\")}catch{fs.cpSync(s,t,{recursive:true})}})'",
-    "dev": "tsx watch src/index.ts",
-    "start": "node dist/index.js",
+    "build": "node init && tsc && node -e 'const fs=require(\"fs\");const p=require(\"path\");[\"routes\",\"src\",\"middleware\"].forEach(d=>{const s=p.join(\"dist/gateway\",d),t=p.join(\"dist\",d);if(fs.existsSync(s)&&!fs.existsSync(t))try{fs.symlinkSync(p.join(\"gateway\",d),t,\"dir\")}catch{fs.cpSync(s,t,{recursive:true})}})'",
+    "dev": "node init && tsx watch src/index.ts",
+    "start": "node init && node dist/index.js",
     "typecheck": "tsc --noEmit",
     "lint": "echo 'TODO: add eslint'",
     "test": "vitest run"
